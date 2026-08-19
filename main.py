@@ -4,8 +4,10 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
+# Ton token officiel
 TOKEN = "8763987035:AAG-LvIXsUoY_kZpaZlI0ESNjISTG5PsgLs"
 
+# Serveur web pour satisfaire Render
 class HealthCheckHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -18,8 +20,8 @@ def run_health_server():
     server.serve_forever()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Lien personnalisé vers ton profil Tondebruno
-    support_link = 'https://t.me/Tondebruno'
+    # Lien mis à jour avec ton nouveau pseudo @ztnde
+    support_link = 'https://t.me/ztnde'
     
     keyboard = [
         [InlineKeyboardButton("🛒 Acheter un VPN", callback_data='buy_vpn')],
@@ -36,16 +38,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    
+    # Réponses personnalisées avec ton nouveau pseudo
     if query.data == 'buy_vpn':
-        await query.message.reply_text("💳 Contactez @Tondebruno pour les offres.")
+        await query.message.reply_text("💳 Contactez @ztnde pour les offres.")
     elif query.data == 'reseller':
-        await query.message.reply_text("💼 Contactez @Tondebruno pour devenir revendeur.")
+        await query.message.reply_text("💼 Contactez @ztnde pour devenir revendeur.")
 
 def main():
+    # Lancer le serveur web en arrière-plan
     threading.Thread(target=run_health_server, daemon=True).start()
+    
+    # Lancer le bot
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_handler))
+    
+    print("Bot lancé avec succès pour @ztnde !")
     application.run_polling()
 
 if __name__ == '__main__':
