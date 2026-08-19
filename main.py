@@ -1,80 +1,47 @@
-import logging
-from telegram import ReplyKeyboardMarkup, Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-)
+import os
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
-
-# Ton Token Telegram intégré
-TOKEN = "8763987035:AAFVZzm0yPktps5u7km9S8OyowQf85tg6Nw"
-
+# Token de ton bot Telegram
+TOKEN = "8763987035:AAFVZzm0yPktps5u7km9S80yowQf85tg6Nw"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_name = update.effective_user.first_name
-
     keyboard = [
-        ["🛒 Acheter un VPN", "💼 Espace revendeur"],
-        ["📁 Mes comptes"],
-        ["📝 Fichier de test", "🔔 Notifications"],
-        ["✉️ Message admin", "🤖 Assistance"],
-        ["🎁 Gains & Parrainage"],
+        [InlineKeyboardButton("🛒 Acheter un VPN", callback_data='buy_vpn')],
+        [InlineKeyboardButton("💼 Espace Revendeur", callback_data='reseller')],
+        [InlineKeyboardButton("📢 Canal Officiel", url='https://t.me/your_channel_link')],
+        [InlineKeyboardButton("👨‍💻 Support Client", url='https://t.me/your_support_link')]
     ]
-    reply_markup = ReplyKeyboardMarkup(
-        keyboard, resize_keyboard=True, persistent=True
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    welcome_text = "👋 **Bienvenue sur VPN Pro Bot !**\n\nChoisissez une option dans le menu ci-dessous :"
+    
+    if update.message:
+        await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
+    elif update.callback_query:
+        await update.callback_query.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-    message = (
-        f"✨ **BIENVENUE {user_name.upper()} !** ✨\n"
-        f"━━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"👤 **VOTRE PROFIL**\n"
-        f"🏷️ Nom : {user_name}\n"
-        f"🆔 ID : `{update.effective_user.id}`\n\n"
-        f"Que souhaitez-vous faire ?"
-    )
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    if query.data == 'buy_vpn':
+        await query.message.reply_text("💳 Pour acheter un accès VPN, contactez directement le support ou choisissez une offre.")
+    elif query.data == 'reseller':
+        await query.message.reply_text("💼 Pour devenir revendeur, veuillez contacter l'administrateur.")
 
-    await update.message.reply_text(
-        message, parse_mode="Markdown", reply_markup=reply_markup
-    )
+def main():
+    # Configuration du bot avec la nouvelle version de python-telegram-bot
+    application = Application.builder().token(TOKEN).build()
+    
+    # Handlers
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(button_handler))
+    
+    # Lancement du polling
+    print("Bot démarré avec succès !")
+    application.run_polling()
 
-
-async def repondre_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    texte = update.message.text
-
-    if texte == "🛒 Acheter un VPN":
-        keyboard_vpn = [
-            ["🟠 Orange", "🔵 Moov"],
-            ["🔙 Retour au menu"],
-        ]
-        await update.message.reply_text(
-            "Choisissez votre réseau :",
-            reply_markup=ReplyKeyboardMarkup(
-                keyboard_vpn, resize_keyboard=True
-            ),
-        )
-    elif texte == "📝 Fichier de test":
-        await update.message.reply_text(
-            "🥳 Obtenez votre fichier de test 24h gratuit !"
-        )
-    elif texte == "✉️ Message admin":
-        await update.message.reply_text(
-            "💌 Envoyez votre message à l'administrateur ici."
-        )
-    elif texte == "🔙 Retour au menu":
-        await start(update, context)
-
-
-if __name__ == "__main__":
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, repondre_menu)
-    )
-    app.run_polling()
+if __name__ == '__main__':
+    main()
+    
