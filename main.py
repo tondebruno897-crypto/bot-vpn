@@ -25,7 +25,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🛒 Acheter un VPN", callback_data='buy_vpn')],
         [InlineKeyboardButton("💼 Espace Revendeur", callback_data='reseller')],
         [InlineKeyboardButton("📢 Canal Officiel", url='https://t.me/+wZ6VGTvjTR44Y2E8')],
-        [InlineKeyboardButton("👨‍💻 Support Client", url='https://t.me/@Tondebruno')]
+        [InlineKeyboardButton("👨‍💻 Support Client", url='https://t.me/@ztnde')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     welcome_text = "👋 **Bienvenue sur VPN Pro Bot !**\n\nChoisissez une option :"
